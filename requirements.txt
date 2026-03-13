@@ -1,0 +1,8 @@
+streamlit
+firecrawl-py
+google-generativeai
+python-dotenv
+pandas
+plotly
+langchain-google-genai
+langchain-core
