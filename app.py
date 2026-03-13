@@ -260,7 +260,7 @@ else:
     st.markdown("""
     ### How it works
     1. **Firecrawl** searches for the latest retail signals, social media buzz, and upcoming drops in Singapore.
-    2. **Gemini LLM** analyzes the snippets using business logic from the *Hype Retailer Simulator*.
+    2. **Gemini LLM** analyzes the snippets using business logic from the [Hype Retailer Simulator](https://hype-retailer-simulator-bngud8nqlcbkuj4q8qyuzn.streamlit.app).
     3. **Intelligence Scores** are calculated based on trend velocity, influencer tiers, and search intent.
     4. **Top 3 Predictions** are ranked by their probability of becoming a major "Hype" event.
     """)
