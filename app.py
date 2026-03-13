@@ -87,10 +87,20 @@ def get_hype_data(niche, user_keyword=""):
     
     app = FirecrawlApp(api_key=api_key)
     
+    # Simple Parser for multiple keywords (e.g. Nike, Adidas)
+    if user_keyword:
+        keywords = [k.strip() for k in user_keyword.split(",") if k.strip()]
+        if len(keywords) > 1:
+            keyword_query = "(" + " OR ".join(f"'{k}'" for k in keywords) + ")"
+        else:
+            keyword_query = f"'{keywords[0]}'" if keywords else ""
+    else:
+        keyword_query = ""
+    
     # Dynamic Query Logic based on Niche and Singapore Platforms
     now = datetime.now()
     time_window = now.strftime("%B %Y")
-    base_query = f"Singapore {time_window} {user_keyword}"
+    base_query = f"Singapore {time_window} {keyword_query}".strip()
     
     niche_queries = {
         "👟 Sneakers & Streetwear": f"{base_query} (site:reddit.com/r/singapore OR site:forums.hardwarezone.com.sg OR site:limitededt.com) 'drop' OR 'raffle' OR 'release date'",
@@ -105,12 +115,31 @@ def get_hype_data(niche, user_keyword=""):
         try:
             # Execute actual Firecrawl search
             res = app.search(query)
-            if isinstance(res, dict) and "data" in res:
-                results = [f"{item.get('title', '')}: {item.get('description', '')}" for item in res["data"]]
+            
+            # Robust extraction from different possible response formats
+            items = []
+            if isinstance(res, dict):
+                if "data" in res and res["data"]:
+                    items = res["data"]
+                elif "web" in res and res["web"]:
+                    items = res["web"]
+                elif "results" in res and res["results"]:
+                    items = res["results"]
             elif isinstance(res, list):
-                results = [f"{item.get('title', '')}: {item.get('description', '')}" for item in res]
-            else:
-                results = [str(res)]
+                items = res
+            
+            # Parse items into snippets
+            results = []
+            for item in items:
+                if isinstance(item, dict):
+                    title = item.get('title', '') or item.get('name', '')
+                    desc = item.get('description', '') or item.get('snippet', '')
+                    if title or desc:
+                        results.append(f"{title}: {desc}")
+            
+            if not results:
+                st.warning(f"No high-signal data found for '{user_keyword}' in {niche} for {time_window}.")
+            
             return results
         except Exception as e:
             st.error(f"Firecrawl Error: {e}")
