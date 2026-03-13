@@ -5,11 +5,3 @@ __pycache__/
 *.pyc
 .streamlit/
 LinkedIn.MD
-*.mov
-*.mp4
-*.png
-*.jpg
-*.jpeg
-*.log
-.vscode/
-.idea/
